@@ -17,28 +17,32 @@
 ;; March 29, 2009: added *prxml-indent*
 ;;
 ;; January 4, 2009: initial version
+;;
+;; February 4, 2012: ported to clojure 1.3+ by Allen Rohner
 
 
 ;; See function "prxml" at the bottom of this file for documentation.
 
 
-(ns 
+(ns
   ^{:author "Stuart Sierra",
-     :doc "Compact syntax for generating XML. See the documentation of \"prxml\" 
+     :doc "Compact syntax for generating XML. See the documentation of \"prxml\"
 for details."}
   clojure.contrib.prxml
   (:use [clojure.string :only (escape)]))
 
 (def
- ^{:doc "If true, empty tags will have a space before the closing />"}
- *html-compatible* false)
+  ^{:doc "If true, empty tags will have a space before the closing />"
+    :dynamic true}
+  *html-compatible* false)
 
 (def
- ^{:doc "The number of spaces to indent sub-tags.  nil for no indent
-  and no extra line-breaks."}
- *prxml-indent* nil)
+  ^{:doc "The number of spaces to indent sub-tags.  nil for no indent
+  and no extra line-breaks."
+    :dynamic true}
+  *prxml-indent* nil)
 
-(def ^{:private true} *prxml-tag-depth* 0)
+(def ^{:private true :dynamic true} *prxml-tag-depth* 0)
 
 (def ^{:private true} print-xml)  ; forward declaration
 
@@ -49,11 +53,13 @@ for details."}
              \' "&apos;"
              \" "&quot;"}))
 
-(defn- as-str
-  [x]
-  (if (instance? clojure.lang.Named x)
+(defn named? [x]
+  (instance? clojure.lang.Named x))
+
+(defn as-str [x]
+  (if (named? x)
     (name x)
-    (str x)))
+    x))
 
 (defn- prxml-attribute [name value]
   (print " ")
