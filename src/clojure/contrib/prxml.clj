@@ -59,7 +59,7 @@ for details."}
 (defn as-str [x]
   (if (named? x)
     (name x)
-    x))
+    (str x)))
 
 (defn- prxml-attribute [name value]
   (print " ")
